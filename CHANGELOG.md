@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/dasprid/stilla/compare/v1.0.1...v1.0.2) (2025-03-17)
+
+
+### Bug Fixes
+
+* **package.json:** add repository and homepage properties ([afe4a4b](https://github.com/dasprid/stilla/commit/afe4a4b4dec8d30ac5cff1d33cb9c7e61637eda3))
+
 ## [1.0.1](https://github.com/DASPRiD/stilla/compare/v1.0.0...v1.0.1) (2025-03-16)
 
 
