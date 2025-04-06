@@ -7,6 +7,7 @@ import {
     ZodNativeEnum,
     ZodNumber,
     ZodObject,
+    ZodOptional,
     type ZodRawShape,
     ZodString,
     type ZodTypeAny,
@@ -41,6 +42,8 @@ export class PathMap implements Iterable<Readonly<Path>> {
             this.addPaths(schema.element, `${parentPath}.#`);
         } else if (schema instanceof ZodEffects) {
             this.addPaths(schema._def.schema, parentPath);
+        } else if (schema instanceof ZodOptional) {
+            this.addPaths(schema._def.innerType, parentPath);
         } else if (schema instanceof ZodUnion) {
             this.handleUnion(schema, parentPath);
         } else {

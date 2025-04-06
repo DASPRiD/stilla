@@ -60,6 +60,13 @@ describe("PathMap", () => {
         assert.equal(paths.get(""), "string");
     });
 
+    it("should handle optionals", () => {
+        const schema = z.string().optional();
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.get(""), "string");
+    });
+
     it("should handle native enums", () => {
         enum NativeEnum {
             foo = "foo",
