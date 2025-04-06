@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/dasprid/stilla/compare/v1.0.2...v1.1.0) (2025-04-06)
+
+
+### Features
+
+* add support for ZodOptional ([3b5b10d](https://github.com/dasprid/stilla/commit/3b5b10dca3ae0b406be9e6c4678514e0f54d06b4))
+
 ## [1.0.2](https://github.com/dasprid/stilla/compare/v1.0.1...v1.0.2) (2025-03-17)
 
 
