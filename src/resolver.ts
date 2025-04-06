@@ -58,7 +58,7 @@ export class ConfigResolver<T extends z.ZodTypeAny> {
         const parseResult = this.schema.safeParse(rawConfig);
 
         if (!parseResult.success) {
-            throw new Error();
+            throw new Error(`Failed to parse config: ${parseResult.error}`);
         }
 
         return parseResult.data;
