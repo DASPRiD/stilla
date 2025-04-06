@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/dasprid/stilla/compare/v1.1.0...v1.1.1) (2025-04-06)
+
+
+### Bug Fixes
+
+* return proper error on incorrect config ([b7ccd87](https://github.com/dasprid/stilla/commit/b7ccd879f4141ff2b8762bdfb0029a8bdebd5713))
+
 # [1.1.0](https://github.com/dasprid/stilla/compare/v1.0.2...v1.1.0) (2025-04-06)
 
 
