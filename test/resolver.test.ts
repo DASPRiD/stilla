@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { beforeEach, describe, it } from "node:test";
-import { type ZodRawShape, z } from "zod";
+import { type ZodRawShape, z } from "zod/v4";
 import {
     type ConfigProvider,
     ConfigResolver,

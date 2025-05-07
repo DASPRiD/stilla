@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert";
 import { afterEach, before, beforeEach, describe, it, mock } from "node:test";
 import { fs, vol } from "memfs";
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { FileConfigProvider, ReadConfigContext } from "../../src/index.js";
 
 describe("FileConfigProvider", () => {

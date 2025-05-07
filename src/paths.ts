@@ -1,75 +1,92 @@
 import assert from "node:assert";
-import {
-    ZodArray,
-    ZodBoolean,
-    ZodDefault,
-    ZodEffects,
-    ZodEnum,
-    ZodNativeEnum,
-    ZodNullable,
-    ZodNumber,
-    ZodObject,
-    ZodOptional,
-    type ZodRawShape,
-    ZodString,
-    type ZodTypeAny,
-    ZodUnion,
-    type ZodUnionOptions,
-} from "zod";
+import type { util, $ZodType, $ZodTypes } from "zod/v4/core";
 
-export type TypeHint = "string" | "number" | "boolean";
+export type TypeHint = "string" | "number" | "boolean" | "bigint";
 export type Path = [string, TypeHint];
 
 export class PathMap implements Iterable<Readonly<Path>> {
     private readonly paths = new Map<string, TypeHint>();
 
-    public constructor(schema: ZodTypeAny) {
-        this.addPaths(schema);
+    public constructor(schema: $ZodType) {
+        this.addPaths(schema as $ZodTypes);
     }
 
     [Symbol.iterator](): Iterator<Readonly<Path>> {
         return this.paths[Symbol.iterator]();
     }
 
+    public get size(): number {
+        return this.paths.size;
+    }
+
     public get(path: string): TypeHint | null {
         return this.paths.get(path) ?? null;
     }
 
-    private addPaths(schema: ZodTypeAny, parentPath = ""): void {
-        if (schema instanceof ZodObject) {
-            for (const [key, subSchema] of Object.entries(schema.shape as ZodRawShape)) {
-                this.addPaths(subSchema, parentPath ? `${parentPath}.${key}` : key);
+    private addPaths(schema: $ZodType, parentPath = ""): void {
+        const def = (schema as $ZodTypes)._zod.def;
+
+        switch (def.type) {
+            case "array": {
+                this.addPaths(def.element, `${parentPath}.#`);
+                break;
             }
-        } else if (schema instanceof ZodArray) {
-            this.addPaths(schema.element, `${parentPath}.#`);
-        } else if (schema instanceof ZodEffects) {
-            this.addPaths(schema._def.schema, parentPath);
-        } else if (
-            schema instanceof ZodDefault ||
-            schema instanceof ZodOptional ||
-            schema instanceof ZodNullable
-        ) {
-            this.addPaths(schema._def.innerType, parentPath);
-        } else if (schema instanceof ZodUnion) {
-            this.handleUnion(schema, parentPath);
-        } else {
-            this.add(parentPath, extractType(schema));
+
+            case "object": {
+                for (const key in def.shape) {
+                    this.addPaths(def.shape[key], parentPath ? `${parentPath}.${key}` : key);
+                }
+
+                break;
+            }
+
+            case "union": {
+                this.handleUnion(def.options, parentPath);
+                break;
+            }
+
+            case "pipe": {
+                this.addPaths(def.in, parentPath);
+                break;
+            }
+
+            case "nullable":
+            case "optional":
+            case "nonoptional":
+            case "readonly":
+            case "default": {
+                this.addPaths(def.innerType, parentPath);
+                break;
+            }
+
+            default: {
+                const typeHint = extractType(schema);
+
+                if (typeHint) {
+                    this.add(parentPath, typeHint);
+                }
+            }
         }
     }
 
-    private handleUnion(schema: ZodUnion<ZodUnionOptions>, parentPath: string): void {
-        const types = schema._def.options;
+    private handleUnion(options: readonly $ZodType[], parentPath: string): void {
         const primitiveTypes = new Set<TypeHint>();
         let hasObject = false;
 
-        for (const type of types) {
-            if (type instanceof ZodObject) {
+        for (const option of options) {
+            const def = (option as $ZodTypes)._zod.def;
+
+            if (def.type === "object") {
                 hasObject = true;
-                this.addPaths(type, parentPath);
+                this.addPaths(option, parentPath);
                 continue;
             }
 
-            primitiveTypes.add(extractType(type));
+            const typeHint = extractType(option);
+
+            if (typeHint) {
+                primitiveTypes.add(typeHint);
+            }
         }
 
         if (hasObject) {
@@ -77,6 +94,10 @@ export class PathMap implements Iterable<Readonly<Path>> {
                 throw new Error(`Union at path '${parentPath}' mixes objects and primitives`);
             }
 
+            return;
+        }
+
+        if (primitiveTypes.size === 0) {
             return;
         }
 
@@ -105,35 +126,84 @@ export class PathMap implements Iterable<Readonly<Path>> {
     }
 }
 
-const extractType = (schema: ZodTypeAny): TypeHint => {
-    if (schema instanceof ZodString) {
-        return "string";
-    }
+const extractType = (schema: $ZodType): TypeHint | null => {
+    const def = (schema as $ZodTypes)._zod.def;
 
-    if (schema instanceof ZodNumber) {
-        return "number";
-    }
+    switch (def.type) {
+        case "string":
+        case "number":
+        case "boolean":
+        case "bigint":
+            return def.type;
 
-    if (schema instanceof ZodBoolean) {
-        return "boolean";
-    }
+        case "template_literal":
+            return "string";
 
-    if (schema instanceof ZodEnum) {
-        return "string";
-    }
+        case "literal":
+            return extractLiteralValue(def.values);
 
-    if (schema instanceof ZodNativeEnum) {
-        return "string";
-    }
+        case "enum":
+            return "string";
 
-    if (
-        schema instanceof ZodDefault ||
-        schema instanceof ZodOptional ||
-        schema instanceof ZodNullable
-    ) {
-        return extractType(schema._def.innerType);
+        case "null":
+        case "undefined":
+        case "never":
+            return null;
+
+        case "nullable":
+        case "optional":
+        case "nonoptional":
+        case "readonly":
+        case "default":
+            return extractType(def.innerType);
+
+        default: {
+            const jsonSchema = schema._zod.toJSONSchema?.();
+
+            if (jsonSchema && "type" in jsonSchema) {
+                switch (jsonSchema?.type) {
+                    case "string":
+                    case "number":
+                    case "boolean":
+                        return jsonSchema.type;
+                }
+            }
+        }
     }
 
     /* node:coverage ignore next */
-    assert.fail(`Unsupported Zod type: ${schema.constructor.name}`);
+    assert.fail(`Unsupported Zod type: ${def.type}`);
+};
+
+const extractLiteralValue = (values: util.LiteralArray): TypeHint | null => {
+    const prunedValues = values.filter((value) => value !== null && value !== undefined);
+
+    if (prunedValues.length === 0) {
+        return null;
+    }
+
+    const types = new Set<TypeHint>();
+
+    for (const value of prunedValues) {
+        if (typeof value === "string") {
+            types.add("string");
+        } else if (typeof value === "number") {
+            types.add("number");
+        } else if (typeof value === "boolean") {
+            types.add("boolean");
+        } else if (typeof value === "bigint") {
+            types.add("bigint");
+            /* node:coverage ignore next 3 */
+        } else {
+            throw new Error(`Unsupported literal value: ${value}`);
+        }
+    }
+
+    if (types.size > 1) {
+        throw new Error("Literals with mixed types are not supported");
+    }
+
+    const type = types.values().next().value;
+    assert(type);
+    return type;
 };

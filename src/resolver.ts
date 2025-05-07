@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import { type $ZodType, type output, safeParse } from "zod/v4/core";
 import { deepMerge } from "./helpers.js";
 import { PathMap } from "./paths.js";
 import { EnvConfigProvider } from "./provider/env.js";
@@ -10,7 +10,7 @@ type ProviderItem = {
     priority: number;
 };
 
-export class ConfigResolver<T extends z.ZodTypeAny> {
+export class ConfigResolver<T extends $ZodType> {
     private readonly schema: T;
     private readonly pathMap: PathMap;
     private readonly env: string;
@@ -29,7 +29,7 @@ export class ConfigResolver<T extends z.ZodTypeAny> {
         });
     }
 
-    public static default<T extends z.ZodTypeAny>(schema: T, env?: string): ConfigResolver<T> {
+    public static default<T extends $ZodType>(schema: T, env?: string): ConfigResolver<T> {
         const resolver = new ConfigResolver(schema, env);
 
         resolver.addProvider(new FileConfigProvider(), 100);
@@ -38,7 +38,7 @@ export class ConfigResolver<T extends z.ZodTypeAny> {
         return resolver;
     }
 
-    public async resolve(): Promise<z.output<T>> {
+    public async resolve(): Promise<output<T>> {
         const context: ReadConfigContext = {
             paths: this.pathMap,
             env: this.env,
@@ -55,7 +55,7 @@ export class ConfigResolver<T extends z.ZodTypeAny> {
             deepMerge(rawConfig, data);
         }
 
-        const parseResult = this.schema.safeParse(rawConfig);
+        const parseResult = safeParse(this.schema, rawConfig);
 
         if (!parseResult.success) {
             throw new Error(`Failed to parse config: ${parseResult.error}`);
