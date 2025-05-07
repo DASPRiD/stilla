@@ -23,6 +23,8 @@ describe("EnvConfigProvider", () => {
                 ),
                 primitiveArray: z.array(z.string()),
                 arrayArray: z.array(z.array(z.string())),
+                validBigint: z.bigint(),
+                invalidBigint: z.bigint(),
             }),
         );
         context = { paths: mockPaths, env: "test" };
@@ -164,6 +166,8 @@ describe("EnvConfigProvider", () => {
                 KEY1: "value1",
                 KEY2: "not a number",
                 NESTED_KEY3: "false",
+                VALID_BIGINT: "12345",
+                INVALID_BIGINT: "abc",
             },
         });
 
@@ -173,6 +177,8 @@ describe("EnvConfigProvider", () => {
             key1: "value1",
             key2: "not a number",
             nested: { key3: false },
+            validBigint: BigInt(12345),
+            invalidBigint: "abc",
         });
     });
 });

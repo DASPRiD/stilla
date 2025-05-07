@@ -125,6 +125,14 @@ export class EnvConfigProvider implements ConfigProvider {
             case "string": {
                 return value;
             }
+
+            case "bigint": {
+                try {
+                    return BigInt(value);
+                } catch {
+                    return value;
+                }
+            }
         }
     }
 

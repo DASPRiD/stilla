@@ -47,7 +47,7 @@ describe("PathMap", () => {
     });
 
     it("should handle primitive union types", () => {
-        const schema = z.union([z.string(), z.string()]);
+        const schema = z.union([z.string().nullable(), z.string().optional()]);
         const paths = new PathMap(schema);
 
         assert.equal(paths.get(""), "string");
@@ -60,8 +60,42 @@ describe("PathMap", () => {
         assert.equal(paths.get(""), "string");
     });
 
-    it("should handle optionals", () => {
-        const schema = z.string().optional();
+    it("should handle single literals", () => {
+        const schema = z.literal("foo");
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.get(""), "string");
+    });
+
+    it("should handle multi literals", () => {
+        const schema = z.literal(["foo", "bar"]);
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.get(""), "string");
+    });
+
+    it("should throw on mixed literals", () => {
+        const schema = z.literal(["foo", 1, BigInt(1), true]);
+
+        assert.throws(() => new PathMap(schema), /Literals with mixed types are not supported/);
+    });
+
+    it("should ignore empty-ish literal", () => {
+        const schema = z.literal([null, undefined]);
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.size, 0);
+    });
+
+    it("should handle nullish", () => {
+        const schema = z.string().nullish();
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.get(""), "string");
+    });
+
+    it("should handle template literals", () => {
+        const schema = z.templateLiteral(["foo", "bar"]);
         const paths = new PathMap(schema);
 
         assert.equal(paths.get(""), "string");
@@ -74,17 +108,46 @@ describe("PathMap", () => {
             baz = 5,
         }
 
-        const schema = z.nativeEnum(NativeEnum);
+        const schema = z.enum(NativeEnum);
         const paths = new PathMap(schema);
 
         assert.equal(paths.get(""), "string");
     });
 
-    it("should handle effect schemas", () => {
+    it("should handle transform schema", () => {
         const schema = z.string().transform((value) => value);
         const paths = new PathMap(schema);
 
         assert.equal(paths.get(""), "string");
+    });
+
+    it("should handle type with JSON schema fallback", () => {
+        const createTransform = (type: string) => {
+            const schema = z.transform(() => "bar");
+            schema._zod.toJSONSchema = () => ({
+                type,
+            });
+            return schema;
+        };
+
+        const schema = z.object({
+            string: createTransform("string"),
+            number: createTransform("number"),
+            boolean: createTransform("boolean"),
+        });
+
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.get("string"), "string");
+        assert.equal(paths.get("number"), "number");
+        assert.equal(paths.get("boolean"), "boolean");
+    });
+
+    it("should ignore empty-ish union", () => {
+        const schema = z.union([z.null(), z.undefined(), z.never()]);
+        const paths = new PathMap(schema);
+
+        assert.equal(paths.size, 0);
     });
 
     it("should detect path/type collisions when union mixes object and primitive", () => {
