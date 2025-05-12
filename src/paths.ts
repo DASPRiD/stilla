@@ -2,9 +2,11 @@ import assert from "node:assert";
 import {
     ZodArray,
     ZodBoolean,
+    ZodDefault,
     ZodEffects,
     ZodEnum,
     ZodNativeEnum,
+    ZodNullable,
     ZodNumber,
     ZodObject,
     ZodOptional,
@@ -42,7 +44,11 @@ export class PathMap implements Iterable<Readonly<Path>> {
             this.addPaths(schema.element, `${parentPath}.#`);
         } else if (schema instanceof ZodEffects) {
             this.addPaths(schema._def.schema, parentPath);
-        } else if (schema instanceof ZodOptional) {
+        } else if (
+            schema instanceof ZodDefault ||
+            schema instanceof ZodOptional ||
+            schema instanceof ZodNullable
+        ) {
             this.addPaths(schema._def.innerType, parentPath);
         } else if (schema instanceof ZodUnion) {
             this.handleUnion(schema, parentPath);
@@ -118,6 +124,14 @@ const extractType = (schema: ZodTypeAny): TypeHint => {
 
     if (schema instanceof ZodNativeEnum) {
         return "string";
+    }
+
+    if (
+        schema instanceof ZodDefault ||
+        schema instanceof ZodOptional ||
+        schema instanceof ZodNullable
+    ) {
+        return extractType(schema._def.innerType);
     }
 
     /* node:coverage ignore next */
