@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/dasprid/stilla/compare/v1.2.0...v2.0.0) (2025-06-09)
+
+
+### Features
+
+* rewrite for zod v4 ([2c85a26](https://github.com/dasprid/stilla/commit/2c85a26aedea49d2416e9620b0af323d3ec80e15))
+
+
+### BREAKING CHANGES
+
+* Starting with this release this library requires Zod v4
+
 # [1.2.0](https://github.com/dasprid/stilla/compare/v1.1.1...v1.2.0) (2025-05-12)
 
 
