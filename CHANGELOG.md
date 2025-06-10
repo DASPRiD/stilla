@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/dasprid/stilla/compare/v2.0.0...v2.0.1) (2025-06-10)
+
+
+### Bug Fixes
+
+* use core toJSONSchema instead of relying on type._zod.toJSONSchema ([6d34bac](https://github.com/dasprid/stilla/commit/6d34bac044a29a0e05642e230d7d014ddc66db0e))
+
 # [2.0.0](https://github.com/dasprid/stilla/compare/v1.2.0...v2.0.0) (2025-06-09)
 
 
