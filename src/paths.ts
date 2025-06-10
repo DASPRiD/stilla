@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import type { util, $ZodType, $ZodTypes } from "zod/v4/core";
+import { type util, type $ZodType, type $ZodTypes, toJSONSchema } from "zod/v4/core";
 
 export type TypeHint = "string" | "number" | "boolean" | "bigint";
 export type Path = [string, TypeHint];
@@ -158,15 +158,13 @@ const extractType = (schema: $ZodType): TypeHint | null => {
             return extractType(def.innerType);
 
         default: {
-            const jsonSchema = schema._zod.toJSONSchema?.();
+            const jsonSchema = toJSONSchema(schema, { io: "input" });
 
-            if (jsonSchema && "type" in jsonSchema) {
-                switch (jsonSchema?.type) {
-                    case "string":
-                    case "number":
-                    case "boolean":
-                        return jsonSchema.type;
-                }
+            switch (jsonSchema.type) {
+                case "string":
+                case "number":
+                case "boolean":
+                    return jsonSchema.type;
             }
         }
     }

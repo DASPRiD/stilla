@@ -123,7 +123,7 @@ describe("PathMap", () => {
 
     it("should handle type with JSON schema fallback", () => {
         const createTransform = (type: string) => {
-            const schema = z.transform(() => "bar");
+            const schema = z.unknown();
             schema._zod.toJSONSchema = () => ({
                 type,
             });
