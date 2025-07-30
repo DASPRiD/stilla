@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/dasprid/stilla/compare/v2.0.1...v2.1.0) (2025-07-30)
+
+
+### Features
+
+* add support for zod v4 stable ([19fde77](https://github.com/dasprid/stilla/commit/19fde7785acee81a9b78e830005ba3a0f8614762))
+
 ## [2.0.1](https://github.com/dasprid/stilla/compare/v2.0.0...v2.0.1) (2025-06-10)
 
 
