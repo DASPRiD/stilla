@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { type util, type $ZodType, type $ZodTypes, toJSONSchema } from "zod/v4/core";
+import { type $ZodType, type $ZodTypes, toJSONSchema, type util } from "zod/v4/core";
 
 export type TypeHint = "string" | "number" | "boolean" | "bigint";
 export type Path = [string, TypeHint];

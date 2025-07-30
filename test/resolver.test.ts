@@ -81,17 +81,20 @@ describe("ConfigResolver", () => {
 
     it("should use default environment if not provided", () => {
         const resolverWithDefaultEnv = new ConfigResolver(schema);
+        // biome-ignore lint/complexity/useLiteralKeys: required for private access
         assert.equal(resolverWithDefaultEnv["env"], "development");
     });
 
     it("should use provided environment", () => {
         const resolverWithTestEnv = new ConfigResolver(schema, "test");
+        // biome-ignore lint/complexity/useLiteralKeys: required for private access
         assert.equal(resolverWithTestEnv["env"], "test");
     });
 
     it("should create a default resolver with default providers", () => {
         const defaultResolver = ConfigResolver.default(schema);
 
+        // biome-ignore lint/complexity/useLiteralKeys: required for private access
         const providers = defaultResolver["providers"];
         assert.equal(providers.length, 2);
         assert.equal(providers[0].priority, 100);

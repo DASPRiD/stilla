@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { type RawConfig, deepMerge, isRawConfig } from "../src/index.js";
+import { deepMerge, isRawConfig, type RawConfig } from "../src/index.js";
 
 describe("isRawConfig", () => {
     it("should return true for objects", () => {

@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { constants, access, readFile } from "node:fs/promises";
+import { access, constants, readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import type { parse as Json5Parse } from "json5";
 import type { parse as TomlParse } from "smol-toml";
