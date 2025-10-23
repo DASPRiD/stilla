@@ -18,9 +18,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dasprid/stilla.git"
+    "url": "git+https://github.com/DASPRiD/stilla.git"
   },
-  "homepage": "https://github.com/dasprid/stilla",
+  "homepage": "https://github.com/DASPRiD/stilla",
   "author": "Ben Scholzen 'DASPRiD' <mail@dasprids.de>",
   "license": "BSD-2-Clause",
   "type": "module",
