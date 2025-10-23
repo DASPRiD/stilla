@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/DASPRiD/stilla/compare/v2.1.0...v2.1.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* add provenance attestation ([b11c0c1](https://github.com/DASPRiD/stilla/commit/b11c0c1b3445f4ad018cdb44cff9550aaeceaf5d))
+
 # [2.1.0](https://github.com/dasprid/stilla/compare/v2.0.1...v2.1.0) (2025-07-30)
 
 
