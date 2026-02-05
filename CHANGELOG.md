@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/DASPRiD/stilla/compare/v2.1.1...v2.2.0) (2026-02-05)
+
+
+### Features
+
+* add support for prefault zod schema ([00f150c](https://github.com/DASPRiD/stilla/commit/00f150c4d8f41d775e0ba4ff3e42309ffc2b7a62))
+
 ## [2.1.1](https://github.com/DASPRiD/stilla/compare/v2.1.0...v2.1.1) (2025-10-23)
 
 
