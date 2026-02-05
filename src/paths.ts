@@ -54,7 +54,8 @@ export class PathMap implements Iterable<Readonly<Path>> {
             case "optional":
             case "nonoptional":
             case "readonly":
-            case "default": {
+            case "default":
+            case "prefault": {
                 this.addPaths(def.innerType, parentPath);
                 break;
             }
@@ -155,6 +156,7 @@ const extractType = (schema: $ZodType): TypeHint | null => {
         case "nonoptional":
         case "readonly":
         case "default":
+        case "prefault":
             return extractType(def.innerType);
 
         default: {
